@@ -7,15 +7,15 @@ const kickAll = async (m, gss) => {
     const cmd = m.body.startsWith(prefix) ? m.body.slice(prefix.length).split(' ')[0].toLowerCase() : '';
 
     if (cmd !== 'kickall') return; // Only proceed if the command is 'kickall'
-    if (!m.isGroup) return m.reply("* тнιѕ ¢σммαη∂ ¢αη σηℓу вє υѕє∂ ιη gяσυρѕ*");
+    if (!m.isGroup) return m.reply("*This command can only be used in groups*");
 
     const groupMetadata = await gss.groupMetadata(m.from);
     const participants = groupMetadata.participants;
     const botAdmin = participants.find(p => p.id === botNumber)?.admin;
     const senderAdmin = participants.find(p => p.id === m.sender)?.admin;
 
-    if (!botAdmin) return m.reply("*вσт мυѕт вє αη α∂мιη тσ υѕє тнιѕ ¢σммαη∂*");
-    if (!senderAdmin) return m.reply("*уσυ мυѕт вє αη α∂мιη тσ υѕє тнιѕ ¢σммαη∂*");
+    if (!botAdmin) return m.reply("*Bot must be an admin to use this command*");
+    if (!senderAdmin) return m.reply("*You must be an admin to use this command*");
 
     // Collect all non-admin members to remove
     const users = participants
@@ -23,16 +23,19 @@ const kickAll = async (m, gss) => {
       .map(p => p.id);
 
     if (users.length === 0) {
-      return m.reply("*ησ υѕєяѕ тσ кι¢к*");
+      return m.reply("*No users to kick*");
     }
 
     await gss.groupParticipantsUpdate(m.from, users, 'remove')
       .then(() => {
         const kickedNames = users.map(user => `@${user.split("@")[0]}`);
-        m.reply(`*υѕєяѕ ${kickedNames.join(', ')} кι¢кє∂ ѕυ¢¢єѕѕƒυℓℓу ƒяσм тнє gяσυρ ${groupMetadata.subject}*`);
-        
-        // Send the custom kick message
-        gss.sendMessage(m.from, { text: `Bhosdewale ${kickedNames.join(', ')} ko remove kr dia `, mentions: users });
+        m.reply(`*Users ${kickedNames.join(', ')} kicked successfully from the group ${groupMetadata.subject}*`);
+
+        // Custom styled message
+        gss.sendMessage(m.from, {
+          text: `⚠️ INCONNU XD IS HERE — he just wiped out ${kickedNames.join(', ')} from the group. No mercy.`,
+          mentions: users
+        });
       })
       .catch(() => m.reply('Failed to kick user(s) from the group.'));
   } catch (error) {
