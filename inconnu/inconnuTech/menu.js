@@ -84,6 +84,7 @@ const menu = async (m, sock) => {
 │ ⬡ restart
 │ ⬡ block
 │ ⬡ unblock
+│ ⬡ update
 │ ⬡ anticall
 │ ⬡ antidelete
 │ ⬡ upload
